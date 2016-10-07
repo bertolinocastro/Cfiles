@@ -1,23 +1,24 @@
 #include <stdio.h>
 #include <math.h>
 
-double potencia( double k , double n );
-double fatorador( double k , double n );
+long double potencia( long double k , long double n );
+long double radiciacao( long double k , long double n );
+long double procuraProximo( long double k , long double n );
 
 int main(void){
 
-	double k , n;
+	long double k , n;
 
-	scanf( "%lf %lf" , &k , &n );
+	scanf( "%Lg %Lg" , &k , &n );
 
-	printf( "%g elevado a %g resulta em: %g\n" , k , n , potencia( k , n ) );
+	printf( "%Lg elevado a %Lg resulta em: %Lg\n" , k , n , potencia( k , n ) );
 
 	return 0;
 }
 
-double potencia( double k , double n ){
+long double potencia( long double k , long double n ){
 
-	double num; unsigned int indice = 0;
+	long double num; unsigned int indice = 0;
 
 	if( floor(n) == n ){ /* Verifica se é inteiro */
 
@@ -29,25 +30,48 @@ double potencia( double k , double n ){
 
 	}else{ /* Caso não seja inteiro */
 
-		while( floor( n ) != n ) n*=10 , ++indice;
+		while( floor( n ) != n ) n*=10 , ++indice , printf( "DEBUG: line 33 n: %Lg indice: %u\n" , n , indice );
 
-		if( n < 0 ) num = (1/k) * potencia( k , floor( n ) + 1 );
-		else num = k * potencia( k , floor( n ) - 1 );
+		if( n < 0 ) num = (1/k) * potencia( k , n + 1 );
+		else num = k * potencia( k , n - 1 );
 
-		return fatorador( num , potencia( 10 , indice ) );
+		printf( "DEBUG: line 38 %Lg\n" , num );
 
-	}
+		return radiciacao( num , potencia( 10 , indice ) );
 
-
-}
-
-double fatorador( double k , double n ){
-
-	if( k / (10*n) > 0 ) {
-
-	}else{
-		
 	}
 
 }
 
+long double radiciacao( long double k , long double n ){
+
+	long double iteracao , kAct , raiz;
+	iteracao = 0;
+
+	kAct = k;
+	while( iteracao <= 15 ){
+
+		raiz = procuraProximo( kAct , n );
+
+		printf( "DEBUG: line 56 K: %Lg n: %Lg iteracao: %Lg kAct: %Lg raiz: %Lg\n" , k , n , iteracao , kAct , raiz );
+
+		if( k == raiz )	return kAct;
+		else if( k > raiz ) kAct *= potencia( 10 , n );
+		++iteracao;
+
+	}
+
+	return raiz / potencia( 10 , iteracao ) ;
+
+}
+
+long double procuraProximo( long double k , long double n ){
+
+	long double i;
+	i = 0;
+
+	while( potencia( i , n ) <= k ) printf( "DEBUG: line 73 K: %Lg n: %Lg i: %Lg\n" , k , n , i ) , ++i;
+	--i;
+
+	return i;
+}
