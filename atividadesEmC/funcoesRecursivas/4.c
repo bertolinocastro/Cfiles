@@ -48,7 +48,7 @@ int main(void){
 	printf( "%Lg , %u\n" , limpaDecimal( 35 , 35 , &l ) , l );
 	printf( "%u\n" , l );
 */
-	printf( "%Lg elevado a %Lg resulta em: %Lg\n" , k , n , elevacao( k , n ) );
+	printf( "%Lg elevado a %Lg resulta em: %+Lg\n" , k , n , elevacao( k , n ) );
 
 	return 0;
 }
@@ -112,7 +112,7 @@ long double radiciacao( long double k , long long int n ){
 
 	printf( "\n\n------- Radiciacao ---------\n\n" );
 
-	long double/* potenciada ,*/ raiz/* , potenciadaTeste*/ , denum; unsigned int iteracao = 0;
+	long double/* potenciada ,*/ raiz/* , potenciadaTeste*/ , denum; unsigned int iteracao = 0; unsigned short int kNegativo = 0;
 
 	//iteracao = 0;
 
@@ -131,16 +131,17 @@ long double radiciacao( long double k , long long int n ){
 
 	//raiz = procuraProximo( potenciada , n );
 
-	raiz = procuraProximo( k , n );
+	if( k >= 0 ) raiz = procuraProximo( k , n );
+	else raiz = procuraProximo( -k , n ) , kNegativo = 1;
 
 	printf( "\nNotação científica: %Lg\n\n" , e( iteracao ) );
 
 	denum = procuraProximo( e( iteracao ) , n );
 	printf( "\nRaiz do denominador (notacao cientifica) %Lg\n" , denum );
+	raiz /= denum;
+	printf( "\nResultado: r/denum%s%Lg\n" , ( kNegativo == 1 ) ? " i" : " " , raiz );
 
-	printf( "\nResultado: r/denum %Lg\n" , raiz / denum );
-
-	return raiz / denum;
+	return ( kNegativo == 1 ) ? -raiz : raiz;
 
 }
 
