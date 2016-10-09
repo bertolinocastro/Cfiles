@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#define einteiro( __x ) ( ( ( (long long int) __x ) == ( (long double)  __x ) ) ? 1 : 0 )
-//#define einteiro( __x ) (  ( __x % 1.0L == 0 ) ? 1 : 0 )
+//#define einteiro( __x ) ( ( __x % 1.0L == 0 ) ? 1 : 0 )
 //#define einteiro( __x ) ( ( (long double)__x - (long long int)__x == 0 ) ? 1 : 0 )
 
 #define INFP (1.0/0)
@@ -30,11 +30,10 @@ unsigned int einteiro( long double __x ){
 	inteiro = (long long int) __x / 1;
 	resto = __x - inteiro;
 
-	printf( "É inteiro: x-> %Lg inteiro-> %lli resto-> %Lg\n" , __x , inteiro , resto );
+	//printf( "É inteiro: x-> %Lg inteiro-> %lli resto-> %Lg\n" , __x , inteiro , resto );
 
 	if( resto == ((unsigned) 0.0L) ) return 1;
 	return 0;
-
 }
 /*
 typedef union{
@@ -150,18 +149,18 @@ long double potencia( long double k , long long int n ){
 
 long double radiciacao( long double k , long long int n ){
 
-	long double potenciada , potenciadaTeste , kAct;
+	long double potenciada , potenciadaTeste /*, kAct*/;
 	long long int iteracao /*, kAct */, raiz;
 	iteracao = 0;
-
+/*
 	printf( "DEBUG: ENTREI NA RADICIACAO\n" );
 	printf( "DEBUG: rad k: %Lg\n" , k );
 	printf( "DEBUG: rad teste while: %u\n" , einteiro( k * potencia( 10 , iteracao ) ) );
-
+*/
 
 	potenciadaTeste = potenciada = k;
 	//printf( "DEBUG: rad bitwise or %u\n" , (einteiro( potenciada ) | einfinito( potenciadaTeste = k * potencia( 10 , iteracao ) )) );
-	printf( "DEBUG: é LongDb pot %u potTest %u\n" , eLB( potenciada ) , eLB( potenciadaTeste ) );
+	//printf( "DEBUG: é LongDb pot %u potTest %u\n" , eLB( potenciada ) , eLB( potenciadaTeste ) );
 
 	while( 	einteiro( potenciada ) == 0 &&
 			eLB( potenciadaTeste ) == 1
@@ -172,26 +171,27 @@ long double radiciacao( long double k , long long int n ){
 			/* && iteracao <= 30*/ )
 		potenciada = potenciadaTeste,
 		potenciadaTeste *= e( n ),
-		++iteracao,
+		++iteracao/*,
 		printf( "DEBUG: rad while iteracao: %lli k*10^itera: %Lg\n" , iteracao , potenciada ) ,
-	 	printf( "DEBUG: rad while cast kint: %lli kdb: %Lg\n" , ((long long int) potenciada) , ((long double) potenciada) );
+	 	printf( "DEBUG: rad while cast kint: %lli kdb: %Lg\n" , ((long long int) potenciada) , ((long double) potenciada) )*/;
 	
 		//potenciadaTeste = k * potencia( 10 , ++iteracao );
-
+/*
 	printf( "\n\nDEBUG: potenciada %Lg e potenciadaTeste %Lg\n\n" , potenciada , potenciadaTeste );
 	printf( "\n\n\nExperimento: pot %Lg potTest*10^n %Lg\n\n\n" , potenciada *= e( n ) , potenciadaTeste *= e( n ) );
 	printf( "\n\n\nExperimento: eint(pot) %d eLB(potenciada) %d\n\n\n" , eLB( potenciada ) , eLB( potenciadaTeste ) );
 	printf( "Experimento: einfinito(potTest) %d einteiro(potTest) %d passouLB(potTest) %d\n\n\n" , einfinito( potenciadaTeste ) , einteiro( potenciadaTeste ) , passouLB( potenciadaTeste ) );
-
-	kAct = potenciada;
+*/
+	//kAct = potenciada;
 	//kAct = k * potencia( 10 , --iteracao );
 
 	
 	//while( iteracao <= 15 ){
 
-		raiz = procuraProximo( kAct , n );
+		//raiz = procuraProximo( kAct , n );
+		raiz = procuraProximo( potenciada , n );
 
-		printf( "DEBUG: line 56 K: %Lg n: %lli iteracao: %lli kAct: %Lg raiz: %lli\n" , k , n , iteracao , kAct , raiz );
+		//printf( "DEBUG: line 56 K: %Lg n: %lli iteracao: %lli kAct: %Lg raiz: %lli\n" , k , n , iteracao , kAct , raiz );
 
 		//if( k == raiz )	return kAct;
 		//else if( k > raiz ) kAct *= potencia( 10 , n );
@@ -205,13 +205,38 @@ long double radiciacao( long double k , long long int n ){
 
 long double procuraProximo( long double k , long double n ){
 
-	long double i;
-	i = 0;
+	long double i , iTeste , val; unsigned short int achou = 0; unsigned long long int passo = 0; long double pot = 0;
+	val = iTeste = i = 0;
 
-	while( potencia( i , n ) <= k ) printf( "DEBUG: line 73 K: %Lg n: %Lg i: %Lg i^n: %Lg\n" , k , n , i , potencia( i , n ) ) , i += 0.00001L /*/ e( n )*/ /* ++i*/;
+	//while( potencia( i , n ) <= k )
+		/* printf( "DEBUG: line 73 K: %Lg n: %Lg i: %Lg i^n: %Lg\n" , k , n , i , potencia( i , n ) ) ,*/ 
+		//i += 0.00001L
+		/*/ e( n )*/ /* ++i*/;
+
+	while( achou != 1 ){
+		if( eLB( ( pot = potencia( i , n ) ) ) == 1 ) {
+			val = ( ( val = 1/e( passo ) ) >= 0 ) ? val : -val;
+			if( i - val > 0 ) iTeste = i - val;
+			printf( "DEBUG: val %Lg iTeste inLoop %Lg\n" , val , iTeste );
+			if( pot > k ){
+				if( iTeste >= 0 ) i-= val , ++passo , printf( "DEBUG: iT>0 -> i: %Lg passo: %lli\n" , i , passo );
+				else achou = 1; }
+			else{
+				
+				//iTeste = i + val;
+				if( iTeste >= 0 ) i = iTeste;
+				else achou = 1 , printf( "DEBUG: iTeste é negativo!\n" );
+			}
+		}else{
+			achou = 1;
+			printf( "DEBUG: NÃO É INTEIRO!\n" );
+		}
+		printf( "DEBUG: line 73 K: %Lg n: %Lg i: %Lg i^n: %Lg passo: %lli achou: %hu\n" , k , n , i , pot , passo , achou );
+	}
+
 	/*--i;*/
 	//i -= 1 / e( n );
-	i -= 0.00001L;
+	//i-= e( --passo );
 
 	return i;
 }
