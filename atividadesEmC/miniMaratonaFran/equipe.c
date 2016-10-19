@@ -1,4 +1,12 @@
 #include "../string.variavel.h"
+#include <unistd.h> /* Biblioteca para incuir função sleep */
+#include "cores.h"
+#define __limparComando "clear screen"
+#define limparTela ( system( __limparComando ) , printf( KWHT ) )
+
+#define SN ( KGRN"S"KWHT"/"KRED"N"KWHT )
+
+#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )
 
 char x;
 
@@ -12,24 +20,27 @@ afazeres *atividades;
 
 short cadastrar( unsigned int qtd );
 void editar( unsigned int qtd );
-void excluir( unsigned int qtd );
+short excluir( unsigned int qtd );
 
-void printaTudo( unsigned int qtd , short estado );
+char verificaResp( );
 
-void limpaVet( unsigned int pos , unsigned int qtd );
+short printaTudo( unsigned int qtd , short estado );
 
-unsigned int cadastrados = 0;
+short limpaVet( unsigned int pos , unsigned int qtd );
+
 
 int main( void ){
 
 	unsigned int opcao;
+
+	limparTela;
 
 	do{
 
 		printf( "\n----------------------------------------------\n" );
 		printf( "Menu:\n" );
 		printf( "\tOpcao 1 : Cadastrar\n" );
-		printf( "\tOpcao 2 : Editar\n" );
+		printf( "\tOpcao 2 : Consultar todas as tarefas (Editar)\n" );
 		printf( "\tOpcao 3 : Excluir\n" );
 		printf( "\tOpcao 4 : Relatorio\n" );
 		printf( "\n## Para sair digite 0: \n" );
@@ -38,22 +49,26 @@ int main( void ){
 		printf( "\nEscolha a opcao: " );
 		scanf( "%u" , &opcao );
 
+		while( opcao < 0 || opcao > 4 ) ( printf( "\nOpção inválida!\nDigite novamente: " ) , scanf( " %u" , &opcao ) );
+
+		limparTela;
+
 		switch( opcao ){
 			case 1:
 				do{
-					if( cadastrados + 1 >= 3 ) printf( "DEBUG\n" );
-					atividades = (afazeres *) realloc( atividades , ++cadastrados * sizeof( afazeres ) );
-					printf( "DEBUG: Passou realloc\n" );
-				}while( cadastrar( cadastrados ) != 0 );
+					atividades = (afazeres *) realloc( atividades , ( tam( atividades ) + 1 ) * sizeof( afazeres ) );
+					if( atividades == NULL ) { fprintf( stderr , "\nPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!" ); exit( 1 ); }
+				}while( cadastrar( tam( atividades ) ) );
 				break;
 			case 2:
-				editar( cadastrados );
+				editar( tam( atividades ) );
 				break;
 			case 3:
-				excluir( cadastrados-- );
+				while( excluir( tam( atividades ) ) );
 				break;
 			case 4:
-				printaTudo( cadastrados , 1 );
+				printf( "\n\n\nRelatório --------------------------------------------------------- " );
+				printaTudo( tam( atividades ) , 1 );
 				break;
 		}
 
@@ -64,97 +79,154 @@ int main( void ){
 
 short cadastrar( unsigned int qtd ){
 
-	char querer = 'a';
+	char resp = 'a';
 
-	printf( "\nDigite o nome da atividade: " );
+	printf( "\nCriação de atividade: -----------------------------------------------\n" );
+	printf( "\nDigite o nome da nova atividade: " );
 	pegastr( &(atividades[qtd-1].nomeAtv) );
 
-	atividades[qtd-1].status = 0;
+	printf( "\nAtividade concluída? (%s) " , SN );
+	resp = verificaResp();
+	atividades[qtd-1].status = ( resp == 's' || resp == 'S' ) ? 1 : 0 ;
 
-	printf( "\nDeseja cadastrar outra atividade? (S/N)" );
-	while( querer != 's' && querer != 'S' && querer != 'n' && querer != 'N' ) scanf( " %c" , &querer );
+	printf( "\nQuantas horas foram gastas para a atividade? " );
+	scanf( " %u" , &atividades[qtd-1].horasGast );
+	
+	printf( "\nDeseja cadastrar outra atividade? (%s) " , SN );
+	resp = verificaResp();
 
-	if( querer == 's' || querer == 'S' ) return 1 ;
+	limparTela;
+
+	printf( "\nAtividades existentes -----------------------------------------------\n" );
+	printaTudo( qtd , 0 );
+	printf( "\n\n\n" );
+
+
+	if( resp == 's' || resp == 'S' ) return 1 ;
 	else return 0;
 
 }
 
 void editar( unsigned int qtd ){
 	
-	unsigned int id = 0;
+	unsigned int id = 0; char resp;
 
-	printaTudo( qtd , 2 );
+	do{
 
-	printf( "\nDigite qual o ID da atividade deseja editar: " );
-	scanf( "%u" , &id  );
+		printf( "\n\nConsulta -------------------------------------------------------\n" );
+		if( printaTudo( qtd , 0 ) ) return;
 
-	printf( "\nAtividade %u : 'quantas horas foram gastas para sua resolução?' " , id );
-	scanf( "%u" , &atividades[id-1].horasGast );
+		printf( "\n\nDeseja mudar o estado ou tempo gasto de alguma atividade? (%s) " , SN );
+		resp = verificaResp();
 
-	atividades[id-1].status = 1;
+		if( resp == 's' || resp == 'S' ){
+
+			printf( "\nDigite qual o ID da atividade que deseja editar: " );
+			scanf( " %u" , &id  );
+
+			limparTela;
+
+			printf( "\n---------------------------------------------------------------------" );
+			printf( "\n\tID selecionado: %u" , id );
+			printf( "\n\tNome: %s" , atividades[id-1].nomeAtv );
+			printf( "\n\tStatus: %s" , ( atividades[id-1].status == 0 ) ? "TO-DO" : "DONE" );
+			printf( "\n\tTempo gasto: %uh" , atividades[id-1].horasGast );
+			printf( "\n---------------------------------------------------------------------" );
+
+			printf( "\n\nDeseja torná-la %s? (%s) " , ( atividades[id-1].status ) ? "Incompleta" : "Completa" , SN );
+			resp = verificaResp();
+			if( resp == 's' || resp == 'S' ) atividades[id-1].status = !atividades[id-1].status;
+
+			printf( "\n\nDeseja alterar a carga horária da atividade? (%s) " , SN );
+			resp = verificaResp();
+			if( resp == 's' || resp == 'S' ){
+				printf( "\nQuantas horas foram gastas até %s? " , ( atividades[id-1].status ) ? "sua conclusão" : "o momento" );
+				scanf( " %u" , &atividades[id-1].horasGast );
+			}
+
+			printf( "\n\nConfigurações alteradas!\n\n\n\tAguarde um momento...\n" );
+		 	sleep( 3 );
+
+			limparTela;
+			continue;
+
+		}
+
+		limparTela;
+
+	}while( resp == 's' || resp == 'S' );
 
 }
 
-void excluir( unsigned int qtd ){
+short excluir( unsigned int qtd ){
 
-	unsigned int id = 0;
+	unsigned int id = 0; char resp;
 
-	printaTudo( qtd , 2 );
+	printf( "\n\nExcluir -------------------------------------------------------\n" );
+	if( printaTudo( qtd , 0 ) ) return 0;
 
-	printf( "\nDigite qual o ID da atividade deseja excluir: " );
-	scanf( "%u" , &id  );
+	printf( "\n\n\nDigite qual o ID da atividade deseja excluir: " );
+	do{ scanf( " %u" , &id  ); }while( id < 1 || id > qtd );
 
-	limpaVet( id - 1 , qtd );
+	printf( "\n\n\nTem certeza da exclusão? (%s) " , SN );
+	resp = verificaResp();
 
+	limparTela;
+
+	if( resp == 's' || resp == 'S' ) ( printf( "\nAtividade %u %s!\n" , id , ( limpaVet( id - 1 , qtd ) ) ? KRED"não foi excluída! :(" : KGRN"excluída!" ) , sleep( 2 ) , limparTela );
+	if( atividades == NULL && qtd - 1 != 0 ) exit( 1 );
+
+	if( printaTudo( qtd - ( resp == 's' || resp == 'S' ) ? 1 : 0 , 0 ) ) return 0;
+
+	printf( "\n\n%sDeseja excluir outra atividade? (%s) " , KWHT , SN );
+	resp = verificaResp();
+
+	limparTela;
+	
+	if( resp == 's' || resp == 'S' ) return 1;
+	return 0;
 }
 
-void printaTudo( unsigned int qtd , short estado ){
+short printaTudo( unsigned int qtd , short estado ){
 
 	unsigned int j = 0 , jTot = 0 , jY = 0;
 
-	if( qtd <= 0 ){ printf( "\n\n####### NÂO EXISTEM TAREDAS CADASTRADAS! #######\n\n" ); return; }
+	if( qtd <= 0 ){ printf( "\n\n%s####### NÂO EXISTEM TAREFAS CADASTRADAS! #######%s\n\n" , KRED , KWHT ); sleep( 2 ); return 1; }
 
-	switch( estado ){
-		case 1:
+	while( j < qtd ){
+		printf( "\n---------------------------------------------------------------------" );
+		printf( "\n\tID: %u" , j + 1 );
+		printf( "\n\tNome: %s" , atividades[j].nomeAtv );
+		printf( "\n\tStatus: %s" , ( atividades[j].status == 0 ) ? "TO-DO" : "DONE" );
+		printf( "\n\tTempo gasto: %uh" , atividades[j].horasGast );
+		printf( "\n---------------------------------------------------------------------" );
+		++j;
+	}
 
-			while( j < qtd ){
-				if( atividades[j].status ){
-					printf( "\n---------------------------------------------------------------------" );
-					printf( "\n\tID: %u" , j + 1 );
-					printf( "\n\tNome: %s" , atividades[j].nomeAtv );
-					printf( "\n\tStatus: %s" , ( atividades[j].status == 0 ) ? "TO-DO" : "DONE" );
-					printf( "\n---------------------------------------------------------------------" );
-				}
-				++j;
-			}
-			j = 0;
-			while( j < qtd ){ if( atividades[j].status ) jTot += atividades[j].horasGast , ++jY; ++j; }
-			printf("\n****Foram feitas %u atividades! (Parabéns!) ****\n\tQuantidade de horas gastas: %u\n\n", jY , jTot );
-			break;
-		case 2:
-			while( qtd > 0 ){
-				printf( "\n---------------------------------------------------------------------" );
-				printf( "\n\tID: %u" , qtd );
-				printf( "\n\tNome: %s" , atividades[qtd-1].nomeAtv );
-				printf( "\n\tStatus: %s" , ( atividades[qtd-1].status == 0 ) ? "TO-DO" : "DONE" );
-				printf( "\n---------------------------------------------------------------------" );
-				--qtd;
-			}	
-			break;
+	if( estado ){
+		j = 0;
+		while( j < qtd ){ if( atividades[j].status ) jTot += atividades[j].horasGast , ++jY; ++j; }
+		printf("\n\n****Foram feitas %u atividades! (%sParabéns%s!) ****\n\n\tExistem %u atividades pendentes! (%sQue pena%s!)\n\n\tQuantidade total de horas gastas: %u\n\n", jY , KGRN , KWHT , qtd - jY , KRED , KWHT , jTot ); getchar();
+		printf( "\nPressione enter para sair..." );	getchar(); limparTela;
 	}
 	
-
+	return 0;
 }
 
-void limpaVet( unsigned int pos , unsigned int qtd ){
+short limpaVet( unsigned int pos , unsigned int qtd ){
 	
 	int i = 0;
 
-	for( i = pos ; i < qtd ; ++i){
-		
-		if( i != qtd - 1) atividades[i] = atividades[i+1];
-	}
+	for( i = pos ; i < qtd ; ++i) if( i != qtd - 1) atividades[i] = atividades[i+1];
 
-	atividades = (afazeres *) realloc( atividades , qtd * sizeof( afazeres ) );
+	atividades = (afazeres *) realloc( atividades , (qtd - 1 ) * sizeof( afazeres ) );
 
+	if( atividades == NULL && qtd - 1 != 0 ){ fprintf( stderr , "\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT ); return 1; }
+	return 0;
+}
+
+char verificaResp( ){
+	char respAct;
+	do{ scanf( " %c" , &respAct ); } while( respAct != 's' && respAct != 'S' && respAct != 'n' && respAct != 'N' );
+	return respAct;
 }
