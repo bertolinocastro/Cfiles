@@ -1,3 +1,4 @@
+
 #include "../string.variavel.h"
 #include <unistd.h> /* Biblioteca para incuir função sleep */
 #include "cores.h"
@@ -6,7 +7,7 @@
 
 #define SN ( KGRN"S"KWHT"/"KRED"N"KWHT )
 
-#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )
+/*#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )*/
 
 char x;
 
@@ -14,6 +15,7 @@ typedef struct{
 	char *nomeAtv;
 	short status;
 	unsigned int horasGast;
+	unsigned short int final;
 } afazeres;
 
 afazeres *atividades;
@@ -28,10 +30,16 @@ short printaTudo( unsigned int qtd , short estado );
 
 short limpaVet( unsigned int pos , unsigned int qtd );
 
+unsigned int tam( afazeres *ptr );
 
 int main( void ){
 
 	unsigned int opcao;
+	unsigned int tamanho;
+
+	atividades = (afazeres *) calloc( 1 , sizeof( afazeres ) );
+	atividades[0].final = 1;
+	printf( "DEBUG %s %d %d %d\n" , atividades[0].nomeAtv , atividades[0].status , atividades[0].horasGast , atividades[0].final );
 
 	limparTela;
 
@@ -56,9 +64,15 @@ int main( void ){
 		switch( opcao ){
 			case 1:
 				do{
-					atividades = (afazeres *) realloc( atividades , ( tam( atividades ) + 1 ) * sizeof( afazeres ) );
-					if( atividades == NULL ) { fprintf( stderr , "\nPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!" ); exit( 1 ); }
-				}while( cadastrar( tam( atividades ) ) );
+					tamanho = tam( atividades );
+
+					printf( "\nDEBUG: %d\n" , tam( atividades ) );
+					
+					atividades = (afazeres *) realloc( atividades , ( tamanho + 1 ) * sizeof( afazeres ) );
+					
+					printf( "\nDEBUG: %d\n" , tam( atividades ) );
+					if( atividades == NULL ) { fprintf( stderr , "\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT ); exit( 1 ); }
+				}while( cadastrar( tamanho ) );
 				break;
 			case 2:
 				editar( tam( atividades ) );
@@ -81,9 +95,11 @@ short cadastrar( unsigned int qtd ){
 
 	char resp = 'a';
 
+	if( qtd > 1 ){ atividades[qtd-2].final = 0; atividades[qtd-1].final = 1; }
+
 	printf( "\nCriação de atividade: -----------------------------------------------\n" );
 	printf( "\nDigite o nome da nova atividade: " );
-	pegastr( &(atividades[qtd-1].nomeAtv) );
+	pegastr( &atividades[qtd-1].nomeAtv );
 
 	printf( "\nAtividade concluída? (%s) " , SN );
 	resp = verificaResp();
@@ -101,7 +117,9 @@ short cadastrar( unsigned int qtd ){
 	printaTudo( qtd , 0 );
 	printf( "\n\n\n" );
 
-
+	atividades[qtd - 1].final = 0;
+	atividades[qtd].final = 1;
+	
 	if( resp == 's' || resp == 'S' ) return 1 ;
 	else return 0;
 
@@ -229,4 +247,10 @@ char verificaResp( ){
 	char respAct;
 	do{ scanf( " %c" , &respAct ); } while( respAct != 's' && respAct != 'S' && respAct != 'n' && respAct != 'N' );
 	return respAct;
+}
+
+unsigned int tam( afazeres *ptr ){
+	static unsigned int pos = 1 , posFin;
+	if( ptr->final ){ posFin = pos; pos = 1; return posFin; }
+	++pos;	return tam( ++ptr );
 }
