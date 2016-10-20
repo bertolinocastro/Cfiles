@@ -35,11 +35,11 @@ unsigned int tam( afazeres *ptr );
 int main( void ){
 
 	unsigned int opcao;
-	unsigned int tamanho;
 
-	atividades = (afazeres *) calloc( 1 , sizeof( afazeres ) );
-	atividades[0].final = 1;
+	atividades = (afazeres *) calloc( 2 , sizeof( afazeres ) );
+	atividades[1].final = 1;
 	printf( "DEBUG %s %d %d %d\n" , atividades[0].nomeAtv , atividades[0].status , atividades[0].horasGast , atividades[0].final );
+	printf( "DEBUG %s %d %d %d\n" , atividades[1].nomeAtv , atividades[1].status , atividades[1].horasGast , atividades[1].final );
 
 	limparTela;
 
@@ -63,16 +63,13 @@ int main( void ){
 
 		switch( opcao ){
 			case 1:
-				do{
-					tamanho = tam( atividades );
+				while( cadastrar( tam( atividades ) ) ){
 
 					printf( "\nDEBUG: %d\n" , tam( atividades ) );
-					
-					atividades = (afazeres *) realloc( atividades , ( tamanho + 1 ) * sizeof( afazeres ) );
-					
-					printf( "\nDEBUG: %d\n" , tam( atividades ) );
+					atividades = (afazeres *) realloc( atividades , ( tam( atividades ) + 1 ) * sizeof( afazeres ) );
+					/*printf( "\nDEBUG: %d\n" , tam( atividades ) );*/
 					if( atividades == NULL ) { fprintf( stderr , "\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT ); exit( 1 ); }
-				}while( cadastrar( tamanho ) );
+				}
 				break;
 			case 2:
 				editar( tam( atividades ) );
@@ -93,9 +90,9 @@ int main( void ){
 
 short cadastrar( unsigned int qtd ){
 
-	char resp = 'a';
+	char resp;
 
-	if( qtd > 1 ){ atividades[qtd-2].final = 0; atividades[qtd-1].final = 1; }
+	/* if( qtd > 1 ){ atividades[qtd-2].final = 0; atividades[qtd-1].final = 1; } */
 
 	printf( "\nCriação de atividade: -----------------------------------------------\n" );
 	printf( "\nDigite o nome da nova atividade: " );
@@ -113,12 +110,14 @@ short cadastrar( unsigned int qtd ){
 
 	limparTela;
 
-	printf( "\nAtividades existentes -----------------------------------------------\n" );
-	printaTudo( qtd , 0 );
-	printf( "\n\n\n" );
-
 	atividades[qtd - 1].final = 0;
 	atividades[qtd].final = 1;
+
+	printf( "\nAtividades existentes -----------------------------------------------\n" );
+	printaTudo( tam( atividades ) , 0 );
+	printf( "\n\n\n" );
+
+
 	
 	if( resp == 's' || resp == 'S' ) return 1 ;
 	else return 0;
