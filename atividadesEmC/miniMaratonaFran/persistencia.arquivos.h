@@ -5,3 +5,18 @@
  *	Equipe: Ícaro, Thiago, Bertolino
  *
  */
+
+afazeres * buscaDados( char *endereco ){
+	FILE *arquivo; size_t índices_lidos;
+
+	arquivo = fopen( endereco , "rb" );
+
+	if( !arquivo ){ fprintf(stderr, "\n%s  \n", KRED ); return NULL; }
+
+	do{
+
+	}while(  );
+
+
+
+}

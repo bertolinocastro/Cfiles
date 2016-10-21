@@ -12,8 +12,6 @@
 
 /*#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )*/
 
-char x;
-
 typedef struct{
 	char *nomeAtv;
 	short status;
@@ -21,7 +19,11 @@ typedef struct{
 	unsigned short int final;
 } afazeres;
 
+#include "persistencia.arquivos.h"
+
 afazeres *atividades;
+
+afazeres * verificaArquivo( int argc , char **argv );
 
 short cadastrar( unsigned int qtd );
 void editar( unsigned int qtd );
@@ -35,11 +37,12 @@ short limpaVet( unsigned int qtd );
 
 size_t tam( afazeres *ptr );
 
-int main( void ){
+int main( int argc , char **argv ){
 
 	unsigned int opcao;
 
-	atividades = (afazeres *) calloc( 1 , sizeof( afazeres ) );
+	atividades = verificaArquivo( &argc , argv );
+
 	atividades[0].final = 1;
 
 	limparTela;
@@ -86,6 +89,12 @@ int main( void ){
 	}while( opcao != 0 );
 
 	return 0;
+}
+
+afazeres * verificaArquivo( int argc , char **argv ){
+	if( argc > 1 )	return ( !(var = funcao) ) ? var : calloc( 1 , sizeof( afazeres ) );
+		return funcao chamando os arquivos pela funcao persistencia.arquivos.h;
+	return calloc( 1 , sizeof( afazeres ) );
 }
 
 short cadastrar( unsigned int qtd ){
