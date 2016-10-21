@@ -92,8 +92,6 @@ short cadastrar( unsigned int qtd ){
 
 	char resp;
 
-	/* if( qtd > 1 ){ atividades[qtd-2].final = 0; atividades[qtd-1].final = 1; } */
-
 	printf( "\nCriação de atividade: -----------------------------------------------\n" );
 	printf( "\nDigite o nome da nova atividade: " );
 	pegastr( &atividades[qtd-1].nomeAtv );
@@ -136,7 +134,7 @@ void editar( unsigned int qtd ){
 		if( resp == 's' || resp == 'S' ){
 
 			printf( "\nDigite qual o ID da atividade que deseja editar: " );
-			scanf( " %u" , &id  );
+			do{ scanf( " %u" , &id  ); }while( id < 1 || id > qtd );
 
 			limparTela;
 
