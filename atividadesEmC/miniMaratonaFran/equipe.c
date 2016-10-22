@@ -10,6 +10,8 @@
 #define n_relatorio 0
 #define relatorio 1
 
+#define nome_arq_padrao "atividades.bin"
+
 /*#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )*/
 
 typedef struct{
@@ -24,6 +26,7 @@ typedef struct{
 afazeres *atividades;
 
 afazeres * verificaArquivo( int argc , char **argv );
+short salvaArquivo( int argc , char **argv , afazeres *vetorPSalvar );
 
 short cadastrar( unsigned int qtd );
 void editar( unsigned int qtd );
@@ -41,9 +44,9 @@ int main( int argc , char **argv ){
 
 	unsigned int opcao;
 
-	atividades = verificaArquivo( &argc , argv );
+	limparTela;
 
-	atividades[0].final = 1;
+	if( !(atividades = verificaArquivo( argc , argv )) ) atividades = calloc( 1 , sizeof( afazeres ) ) , atividades[0].final = 1;
 
 	limparTela;
 
@@ -55,7 +58,7 @@ int main( int argc , char **argv ){
 		printf( "\tOpcao 2 : Consultar todas as tarefas (Editar)\n" );
 		printf( "\tOpcao 3 : Excluir\n" );
 		printf( "\tOpcao 4 : Relatorio\n" );
-		printf( "\n## Para sair digite 0: \n" );
+		printf( "\n## Para sair e salvar digite 0: \n" );
 		printf( "----------------------------------------------\n" );
 
 		printf( "\nEscolha a opcao: " );
@@ -88,13 +91,23 @@ int main( int argc , char **argv ){
 
 	}while( opcao != 0 );
 
+	limparTela;
+
+	if( salvaArquivo( argc , argv , atividades ) ) printf( "\n\n%sAtividades salvas com sucesso!%s\n\n" , KGRN , KWHT ) , sleep( 3 );
+	else printf( "\n\n%sAtividades não puderam ser salvas!%s\n\n" , KRED , KWHT ) , sleep( 3 );
+
 	return 0;
 }
 
 afazeres * verificaArquivo( int argc , char **argv ){
-	if( argc > 1 )	return ( !(var = funcao) ) ? var : calloc( 1 , sizeof( afazeres ) );
-		return funcao chamando os arquivos pela funcao persistencia.arquivos.h;
-	return calloc( 1 , sizeof( afazeres ) );
+	afazeres *vetorTmp;
+	if( argc == 2 )	return ( vetorTmp = buscaDados( argv[1] ) ) ? vetorTmp : buscaDados( nome_arq_padrao );
+	else return buscaDados( nome_arq_padrao );
+}
+
+short salvaArquivo( int argc , char **argv , afazeres *vetorPSalvar ){
+	if( argc == 2 )	return ( escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , argv[1] ) ) ? 1 : escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , nome_arq_padrao );
+	else return escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , nome_arq_padrao  );
 }
 
 short cadastrar( unsigned int qtd ){
@@ -234,7 +247,7 @@ short printaTudo( short estado ){
 
 	if( estado ){
 		j = 0;
-		while( !atividades[j].final ){ if( atividades[j].status ) jTot += atividades[j].horasGast , ++jY; ++j; }
+		while( !atividades[j].final ){ if( atividades[j].status ) ++jY; jTot += atividades[j].horasGast; ++j; }
 		printf("\n\n****Foram feitas %u atividades! (%sParabéns%s!) ****\n\n\tExistem %u atividades pendentes! (%sQue pena%s!)\n\n\tQuantidade total de horas gastas: %u\n\n", jY , KGRN , KWHT , j - jY , KRED , KWHT , jTot ); getchar();
 		printf( "\nPressione enter para sair..." );	getchar(); limparTela;
 	}
