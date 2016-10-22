@@ -10,14 +10,14 @@
 #define n_relatorio 0
 #define relatorio 1
 
-#define nome_arq_padrao "atividades.bin"
+#define nome_arq_padrao "atividades"
 
 /*#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )*/
 
 typedef struct{
 	char *nomeAtv;
-	short status;
 	unsigned int horasGast;
+	short status;
 	unsigned short int final;
 } afazeres;
 
@@ -42,7 +42,7 @@ size_t tam( afazeres *ptr );
 
 int main( int argc , char **argv ){
 
-	unsigned int opcao;
+	unsigned int opcao; afazeres limpaFinal = { NULL , 0 , 0 , 1 }; char resp;
 
 	limparTela;
 
@@ -50,7 +50,13 @@ int main( int argc , char **argv ){
 
 	limparTela;
 
+	printf( "DEBUG: size afazeres %u\n\tsize nomeAtv %u\n\tsize status %u\n\tsize horasGast %u\n\tsize final %u\n\n" , sizeof( atividades[0] ) , sizeof( atividades[0].nomeAtv ) , sizeof( atividades[0].status ) , sizeof( atividades[0].horasGast ) , sizeof( atividades[0].final ) );
+
+	getchar();
+
 	do{
+
+		limparTela;
 
 		printf( "\n----------------------------------------------\n" );
 		printf( "Menu:\n" );
@@ -72,7 +78,7 @@ int main( int argc , char **argv ){
 			case 1:
 				do{
 					atividades = (afazeres *) realloc( atividades , ( tam( atividades ) + 2 ) * sizeof( afazeres ) );
-					atividades[tam(atividades)+1].final = 1; atividades[tam(atividades)].final = 0;
+					atividades[tam(atividades)+1] = limpaFinal; atividades[tam(atividades)].final = 0;
 
 					if( atividades == NULL ) { fprintf( stderr , "\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT ); exit( 1 ); }
 
@@ -86,6 +92,10 @@ int main( int argc , char **argv ){
 				break;
 			case 4:
 				printaTudo( relatorio );
+				break;
+			case 0:
+				printf( "\n\n%sDeseja realmente sair e salvar? (%s) " , KWHT , SN );
+				opcao = ( (resp = verificaResp()) == 's' || resp == 'S' ) ? 0 : 1 ;
 				break;
 		}
 
@@ -267,7 +277,7 @@ short limpaVet( unsigned int pos ){
 	return 0;
 }
 
-char verificaResp( ){
+char verificaResp(){
 	char respAct;
 	do{ scanf( " %c" , &respAct ); } while( respAct != 's' && respAct != 'S' && respAct != 'n' && respAct != 'N' );
 	return respAct;
