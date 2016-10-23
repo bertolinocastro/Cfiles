@@ -26,14 +26,15 @@ afazeres * buscaDados( char *endereco ){
 
 	if( !(enderecoCompleto = completaNome( endereco , ".bin" )) ){ pErr( ERR_NO_01 ); return NULL; }
 
-	arquivo = fopen( enderecoCompleto , "rb" );
+	printf( "DEBUG: endereco completo %s\n" , enderecoCompleto );
 
-	if( !arquivo ){ pErr( ERR_NO_02 ); return NULL; }
+	if( !(arquivo = fopen( enderecoCompleto , "w+b" )) ){ pErr( ERR_NO_02 ); return NULL; }
 
-	nomesBuscados = buscaDadosNomes( endereco );
+	if( !(nomesBuscados = buscaDadosNomes( endereco )) ){ pErr( ERR_NO_26 ); fclose( arquivo ); return NULL; }
+
+	printf( "DEBUG: CÒDIGO PASSOU COM ARQUIVO INEXISTENTE!\n" );
 
 	do{
-
 		dadosDoArquivo = (afazeres *) realloc( dadosDoArquivo , ( loop + 1 ) * sizeof( afazeres ) );
 
 		indices_lidos = fread( &dadosTmp , sizeof( afazeres ) , 1 , arquivo );
@@ -55,21 +56,40 @@ afazeres * buscaDados( char *endereco ){
 
 char ** buscaDadosNomes( char *endereco ){
 	FILE *arquivo = NULL; char *enderecoCompleto = NULL, **nomeLido = NULL , letra; unsigned int loop = 0 , loopLetra;
+	#if defined( _WIN32 ) || defined( WIN32 )
+		char *nomeTmp = NULL; size_t tamNomeTmp;
+	#endif
 
 	if( !(enderecoCompleto = completaNome( endereco , ".nomes" )) ){ pErr( ERR_NO_05 ); return NULL; }
 
-	if( !(arquivo = fopen( enderecoCompleto , "r" )) ){ pErr( ERR_NO_06 ); return NULL; }
+	if( !(arquivo = fopen( enderecoCompleto , "w+" )) ){ pErr( ERR_NO_06 ); return NULL; }
+	while( (letra = fgetc(arquivo)) != EOF );
+	if( feof( arquivo ) ){ if( ftell( arquivo ) <= 1 ) pErr( ERR_NO_26 ); fclose( arquivo ); return NULL; }
 
+	if( !fseek( arquivo , 0 , SEEK_SET ) ){ pErr( ERR_NO_27 ); fclose( arquivo ); return NULL; }
 	do{
 
 		nomeLido = (char **) realloc( nomeLido , ( loop + 1 ) * sizeof( char * ) );
 
 		loopLetra = 0;
 		while( ( letra = fgetc( arquivo ) ) != '\n' && letra != EOF ){
-			nomeLido[loop] = (char *) realloc( nomeLido[loop] , ( loopLetra + 2 ) * sizeof( char ) );
-			nomeLido[loop][loopLetra] = letra; loopLetra++;
+			#ifdef linux
+				nomeLido[loop] = (char *) realloc( nomeLido[loop] , ( loopLetra + 2 ) * sizeof( char ) );
+				nomeLido[loop][loopLetra] = letra; loopLetra++;
+			#elif defined( _WIN32 ) || defined( WIN32 )
+				nomeTmp = (char *) realloc( nomeTmp , ( loopLetra + 2 ) * sizeof( char ) );
+				nomeTmp[loopLetra] = letra; loopLetra++;
+			#endif
 		}
-		if( letra != EOF ) nomeLido[loop][loopLetra] = '\0';
+		#ifdef linux
+			if( letra != EOF ) nomeLido[loop][loopLetra] = '\0';
+		#elif defined( _WIN32 ) || defined( WIN32 )
+			if( letra != EOF ) nomeTmp[loopLetra] = '\0';
+			loopLetra = 0;
+			tamNomeTmp = tamString( nomeTmp );
+			nomeLido[loop] = (char *) malloc( ( tamNomeTmp + 1 ) * sizeof( char ) );
+			while( loopLetra <= tamNomeTmp ) nomeLido[loop][loopLetra] = nomeTmp[loopLetra++];
+		#endif
 
 		++loop;
 

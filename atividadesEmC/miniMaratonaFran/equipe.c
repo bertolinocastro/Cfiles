@@ -1,11 +1,31 @@
-#include "../string.variavel.h"
-#include <unistd.h> /* Biblioteca para incuir função sleep */
+/*
+ *	Arquivo principal da Mini-Maratona
+ *	da disciplina de Programação de Aplicativos.
+ *
+ *	Sistema visa ser um registrador de atividaes
+ *	nos moles do Kanban. O sistema tem a implementação
+ *	de persistência e dados em disco local.
+ *
+ *	O usuário tem a possibilidade de usar um nome
+ *	customizado para os arquivos a serem criados e/ou
+ *	lidos. Para tanto, deve-se passar como argumento
+ *	da chamada do executável, o nome a ser utilizado
+ *	pelo software. Vale ressaltar que esse nome não 
+ *	deve possuir extensão. 
+ *
+ */
 
-#undef linux 
+#include "../string.variavel.h"
+
+/* Constante definida para permitir, caso possível,
+   a determinação das constantes coloridas em systemas não-Unix */
+/*#define _terminal_ansi*/
 
 #ifdef linux
 	#define __limparComando "clear screen"
-#else
+	#include <unistd.h> /* Biblioteca para incuir função sleep */
+#elif defined( _WIN32 ) || defined( WIN32 )
+	#include <locale.h>
 	#include <windows.h>
 	#define sleep( __time ) Sleep( __time * 1000 )
 	#define __limparComando "cls"
@@ -29,8 +49,6 @@ typedef struct{
 	unsigned short int final;
 } afazeres;
 
-#include "persistencia.arquivos.h"
-
 afazeres *atividades;
 
 afazeres * verificaArquivo( int argc , char **argv );
@@ -48,9 +66,15 @@ short limpaVet( unsigned int qtd );
 
 size_t tam( afazeres *ptr );
 
+#include "persistencia.arquivos.h"
+
 int main( int argc , char **argv ){
 
 	unsigned int opcao; afazeres limpaFinal = { NULL , 0 , 0 , 1 }; char resp;
+
+	#if defined( _WIN32 ) || defined( WIN32 )
+		if( setlocale( LC_ALL , "Portuguese" ) != "Portuguese" ) pErr( ERR_L10N );
+	#endif
 
 	limparTela;
 
@@ -67,7 +91,7 @@ int main( int argc , char **argv ){
 		printf( "\tOpcao 1 : Cadastrar\n" );
 		printf( "\tOpcao 2 : Consultar todas as tarefas (Editar)\n" );
 		printf( "\tOpcao 3 : Excluir\n" );
-		printf( "\tOpcao 4 : Relatorio\n" );
+		printf( "\tOpcao 4 : Relatório\n" );
 		printf( "\n## Para sair e salvar digite 0: \n" );
 		printf( "----------------------------------------------\n" );
 
@@ -119,12 +143,12 @@ int main( int argc , char **argv ){
 
 afazeres * verificaArquivo( int argc , char **argv ){
 	afazeres *vetorTmp;
-	if( argc == 2 )	return ( vetorTmp = buscaDados( argv[1] ) ) ? vetorTmp : buscaDados( nome_arq_padrao );
+	if( argc == 2 )	return ( vetorTmp = buscaDados( argv[1] ) ) ? vetorTmp : NULL;
 	else return buscaDados( nome_arq_padrao );
 }
 
 short salvaArquivo( int argc , char **argv , afazeres *vetorPSalvar ){
-	if( argc == 2 )	return ( escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , argv[1] ) ) ? 1 : escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , nome_arq_padrao );
+	if( argc == 2 )	return ( escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , argv[1] ) ) ? 1 : 0;
 	else return escreveDados( vetorPSalvar , tam( vetorPSalvar ) + 1 , nome_arq_padrao  );
 }
 

@@ -27,5 +27,8 @@
 #define ERR_NO_23 "\n\n%sNão foi possível copiar a extensão: %s.\n%s\n", KRED , extensao , KWHT
 #define ERR_NO_24 "\n\n%sNão foi possível medir a string: %s.\n%sString vazia.%s\n", KRED , string , KYEL , KWHT
 #define ERR_NO_25 "\n\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT
+#define ERR_NO_26 "\n\n%sFalha ao obter nomes das atividades do arquivo %s.\n%sPossível arquivo recém-criado!%s" , KRED , enderecoCompleto , KYEL , KWHT
+#define ERR_NO_27 "\n\n%sFalha ao mover o ponteiro do arquivo para a posição inicial!%s" , KRED , KWHT
+#define ERR_L10N  "\n\n%sFalha em configurar localização do sistema.%s\n" , KRED , KWHT
 
-#define pErr( __erno ) ( fprintf( stderr , __erno ), sleep( 4 ) )
+#define pErr( __erno ) ( fprintf( stderr , __erno ), sleep( 2.5 ) )
