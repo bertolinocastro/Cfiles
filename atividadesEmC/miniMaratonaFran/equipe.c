@@ -1,10 +1,18 @@
-
 #include "../string.variavel.h"
 #include <unistd.h> /* Biblioteca para incuir função sleep */
-#include "cores.h"
-#define __limparComando "clear screen"
-#define limparTela ( system( __limparComando ) , printf( KWHT ) )
 
+#undef linux 
+
+#ifdef linux
+	#define __limparComando "clear screen"
+#else
+	#include <windows.h>
+	#define sleep( __time ) Sleep( __time * 1000 )
+	#define __limparComando "cls"
+#endif
+
+#include "cores.h"
+#define limparTela ( system( __limparComando ) , printf( KWHT ) )
 #define SN ( KGRN"S"KWHT"/"KRED"N"KWHT )
 
 #define n_relatorio 0
@@ -12,7 +20,7 @@
 
 #define nome_arq_padrao "atividades"
 
-/*#define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 )*/
+/* #define tam( __x ) ( ( __x != NULL ) ? ( sizeof( __x ) / sizeof( __typeof__( __x ) ) ) : 0 ) */
 
 typedef struct{
 	char *nomeAtv;
@@ -50,10 +58,6 @@ int main( int argc , char **argv ){
 
 	limparTela;
 
-	printf( "DEBUG: size afazeres %u\n\tsize nomeAtv %u\n\tsize status %u\n\tsize horasGast %u\n\tsize final %u\n\n" , sizeof( atividades[0] ) , sizeof( atividades[0].nomeAtv ) , sizeof( atividades[0].status ) , sizeof( atividades[0].horasGast ) , sizeof( atividades[0].final ) );
-
-	getchar();
-
 	do{
 
 		limparTela;
@@ -80,7 +84,7 @@ int main( int argc , char **argv ){
 					atividades = (afazeres *) realloc( atividades , ( tam( atividades ) + 2 ) * sizeof( afazeres ) );
 					atividades[tam(atividades)+1] = limpaFinal; atividades[tam(atividades)].final = 0;
 
-					if( atividades == NULL ) { fprintf( stderr , "\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT ); exit( 1 ); }
+					if( !atividades ) { pErr( ERR_NO_25 ); exit( 1 ); }
 
 				}while( cadastrar( tam( atividades ) ) );
 				break;
@@ -105,6 +109,10 @@ int main( int argc , char **argv ){
 
 	if( salvaArquivo( argc , argv , atividades ) ) printf( "\n\n%sAtividades salvas com sucesso!%s\n\n" , KGRN , KWHT ) , sleep( 3 );
 	else printf( "\n\n%sAtividades não puderam ser salvas!%s\n\n" , KRED , KWHT ) , sleep( 3 );
+
+	#if defined(_WIN32) || defined(WIN32)
+		system( "PAUSE" );
+	#endif
 
 	return 0;
 }
@@ -188,7 +196,7 @@ void editar( unsigned int qtd ){
 				scanf( " %u" , &atividades[id-1].horasGast );
 			}
 
-			printf( "\n\nConfigurações alteradas!\n\n\n\tAguarde um momento...\n" );
+			printf( "\n\nConfigurações %salteradas%s!\n\n\n\tAguarde um momento...\n" , KGRN , KWHT );
 		 	sleep( 3 );
 
 			limparTela;
@@ -222,7 +230,7 @@ short excluir( unsigned int qtd ){
 
 		limparTela;
 
-		if( resp == 's' || resp == 'S' ) ( printf( "\nAtividade %u %s!\n" , id , ( limpaVet( id - 1 ) ) ? KRED"não foi excluída! :(" : KGRN"excluída!" ) , sleep( 2 ) , limparTela );
+		if( resp == 's' || resp == 'S' ) ( printf( "\nAtividade %u %s!\n" , id , ( limpaVet( id - 1 ) ) ? KRED"não foi excluída"KWHT"! :(" : KGRN"excluída"KWHT"!" ) , sleep( 2 ) , limparTela );
 		if( atividades == NULL && qtd - 1 != 0 ) exit( 1 );
 
 		if( printaTudo( n_relatorio ) ) return 0;
@@ -273,7 +281,7 @@ short limpaVet( unsigned int pos ){
 
 	atividades = (afazeres *) realloc( atividades , i * sizeof( afazeres ) );
 
-	if( atividades == NULL && i != 0 ){ fprintf( stderr , "\n%sPROBLEMA NA ALOCAÇÂO DAS ATIVIDADES!%s" , KRED , KWHT ); return 1; }
+	if( !atividades && !i ){ pErr( ERR_NO_25 ); return 1; }
 	return 0;
 }
 
