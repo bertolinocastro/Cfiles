@@ -3,13 +3,13 @@
  *	da disciplina de Programação de Aplicativos.
  *
  *	Sistema visa ser um registrador de atividaes
- *	nos moles do Kanban. O sistema tem a implementação
- *	de persistência e dados em disco local.
+ *	nos moldes do Kanban. O sistema tem a implementação
+ *	de persistência de dados em disco local.
  *
  *	O usuário tem a possibilidade de usar um nome
  *	customizado para os arquivos a serem criados e/ou
  *	lidos. Para tanto, deve-se passar como argumento
- *	da chamada do executável, o nome a ser utilizado
+ *	da chamada do executável o nome a ser utilizado
  *	pelo software. Vale ressaltar que esse nome não 
  *	deve possuir extensão. 
  *
