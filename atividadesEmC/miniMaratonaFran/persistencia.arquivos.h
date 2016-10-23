@@ -143,19 +143,19 @@ short escreveDadosNomes( afazeres *vetor , size_t tamVet , char *endereco ){
 char * completaNome( char *endereco , char *extensao ){
 	size_t tamEnd , tamExt , ind_P_Esc = 0; char *endTmp = NULL;
 
-	if( !endereco ){ pErr( ERR_NO_18 ); return 0; }
-	if( !extensao ){ pErr( ERR_NO_19 ); return 0; }
+	if( !endereco ){ pErr( ERR_NO_18 ); return NULL; }
+	if( !extensao ){ pErr( ERR_NO_19 ); return NULL; }
 
-	if( !(tamEnd = tamString( endereco )) ){ pErr( ERR_NO_20 ); return 0; }
-	if( !(tamExt = tamString( extensao )) ){ pErr( ERR_NO_21 ); return 0; }
+	if( !(tamEnd = tamString( endereco )) ){ pErr( ERR_NO_20 ); return NULL; }
+	if( !(tamExt = tamString( extensao )) ){ pErr( ERR_NO_21 ); return NULL; }
 
-	if( !(endTmp = (char *) realloc( endTmp , tamEnd + tamExt + 1 )) ){ pErr( ERR_NO_22 ); return 0; };
+	if( !(endTmp = (char *) realloc( endTmp , tamEnd + tamExt + 1 )) ){ pErr( ERR_NO_22 ); return NULL; };
 
 	while( ind_P_Esc < tamEnd )	endTmp[ind_P_Esc] = *endereco++ , ++ind_P_Esc;
 	while( ind_P_Esc < tamEnd + tamExt ) endTmp[ind_P_Esc] = *extensao++ , ++ind_P_Esc;
 	*(endTmp+ind_P_Esc) = '\0';
 
-	if( !(endereco) ){ pErr( ERR_NO_23 ); return 0; }
+	if( !endTmp ){ pErr( ERR_NO_23 ); return NULL; }
 	return endTmp;
 }
 
