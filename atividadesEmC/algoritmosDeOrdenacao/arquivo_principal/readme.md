@@ -8,6 +8,7 @@
   1. Povoamento aleatório (randômico);  
   2. Povoamento ordinal crescente {1,2,3,...,n};  
   3. Povoamento ordinal descrescente {n,n-1,...,2,1};  
+  4. *Povoamento semi-ordinal crescente e semi-ordinal decresente {1,2,...,n-1,n,n-1,...,2,1};*  
 3. *Opcionalmente um arquivo com todas as funcionalidades a serem usadas para o OpenGL plotar os pontos (quadrados) representando os valores a serem organizados e sua respectiva ordenação em função do tempo.*  
   1. *Exposição da contagem de instruções;*  
   2. *Exposição da quantidade de comparações;*  
