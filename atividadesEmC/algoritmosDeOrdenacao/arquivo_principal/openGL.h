@@ -10,11 +10,15 @@
 #ifndef HAVE_STRING_H
 	#include <string.h>
 #endif
+#ifndef HAVE_MATH_H
+	#include <math.h>
+#endif
 
 #define JANELA_LARG_INI 800
 #define JANELA_ALT_INI	600
-
-int janela;
+#define MARGEM_SUPERIOR 10
+#define MARGEM_ESQUERDA 40
+#define ALT_TEXTO 20
 
 short cria_janela( int *argc , char **argv );
 void inicia_animacao( unsigned char key, int x, int y );
@@ -23,7 +27,11 @@ void limpa_tela( void );
 void cria_quadrado( void );
 void escreve_na_tela( int x , int y , char *texto );
 static int tela_Larg , tela_Alt;
-
+static int janela;
+static float xElem;
+static float yElem;
+static int raio_elemento;
+static int N = 10;
 
 short cria_janela( int *argc , char **argv ){
 	
@@ -39,6 +47,14 @@ short cria_janela( int *argc , char **argv ){
 
 	tela_Larg = glutGet(GLUT_SCREEN_WIDTH);
 	tela_Alt = glutGet(GLUT_SCREEN_HEIGHT);
+
+	xElem = tela_Larg / N;
+	yElem = (tela_Alt - MARGEM_SUPERIOR) / N;
+
+	raio_elemento = ( xElem < yElem  ) ? xElem/2 : yElem/2 ;
+	if( raio_elemento > 4 )	raio_elemento = floor( raio_elemento * 0.8 );
+
+	printf("%f %f %d\n", xElem , yElem , raio_elemento );
 
 	glViewport( 0.0f , 0.0f , tela_Larg , tela_Alt );
 	glMatrixMode( GL_PROJECTION );
@@ -71,24 +87,20 @@ void limpa_tela( void ){
 }
 
 void cria_quadrado( void ){
-	
-	GLfloat triangle_vertices[] = {
-		0.0f , 0.0f,
-		0.0f, 10.0f,
-		10.0f, 10.0f,
-		10.0f, 0.0f,
-	};
+	GLfloat elementos[N*2]; int i;
+
+	for( i = 0 ; i < N ; ++i ) elementos[i*2] = i*xElem + raio_elemento , elementos[i*2+1] = i*yElem + raio_elemento , printf( "DEBUG: %d %f %f \n" , i , elementos[i*2] , elementos[i*2+1] );
 
 	glEnableClientState( GL_VERTEX_ARRAY );
 
-	glPointSize( 5 );
-	glVertexPointer( 2 , GL_FLOAT , 0 , triangle_vertices );
+	glPointSize( raio_elemento );
+	glVertexPointer( 2 , GL_FLOAT , 0 , elementos );
 
-	glDrawArrays( GL_POINTS , 0 , 4 );
+	glDrawArrays( GL_POINTS , 0 , N );
 	
 	glDisableClientState( GL_VERTEX_ARRAY );
 
-	escreve_na_tela( 40 , 40 , "Ola Mundo" );
+	escreve_na_tela( MARGEM_ESQUERDA , tela_Alt - MARGEM_SUPERIOR , "Ola Mundo" );
 
 	glutSwapBuffers();
 	
