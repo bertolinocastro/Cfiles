@@ -15,7 +15,6 @@ short cria_janela( int *argc , char **argv ){
 
 	glutDisplayFunc( &desenha_tela );
 	glutKeyboardFunc( &inicia_animacao );
-	glutIdleFunc( &atualiza_tela );
 
 	glutFullScreen();
 

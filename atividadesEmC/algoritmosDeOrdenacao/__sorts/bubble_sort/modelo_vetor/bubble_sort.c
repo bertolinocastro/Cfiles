@@ -1,7 +1,6 @@
 #include "bubble_sort.h"
 #include "../../../arquivo_principal/openGL.h"
 #include <stdio.h>
-#include <unistd.h>
 #include <time.h>
 
 void bubble_sort( void ){
