@@ -8,7 +8,9 @@
 void bubble_sort( void ){
 	int i , j , aux;
 	for( i = 0 ; i < N - 1 ; ++i ){
+		iElem = i;
 		for( j = i + 1 ; j < N ; ++j ){
+			jElem = j;
 			comparacoes++;
 			if( elementos[i] > elementos[j] ){
 				trocas++;
@@ -19,7 +21,7 @@ void bubble_sort( void ){
 				trocou = 1;
 			}
 			passos++;
-			desenha_tela();
+			desenha_tela_populador();
 		}
 	}
 	termina_animacao();
