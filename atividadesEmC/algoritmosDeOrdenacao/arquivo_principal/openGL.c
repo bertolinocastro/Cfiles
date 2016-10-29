@@ -1,13 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "openGL.h"
+#ifndef HAVE_OWN_OPENGL_LIB_H
+	#include "openGL.h"
+#endif
 #include "populadores.h"
 #include "../__sorts/bubble_sort/modelo_vetor/bubble_sort.h"
+#include "int_p_string.h"
+
 
 int inicio = 0;
 
 short cria_janela( int *argc , char **argv ){
-	
+
 	glutInit( argc , argv );
 	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB );
 	glutInitWindowSize( JANELA_LARG_INI , JANELA_ALT_INI );
@@ -35,26 +39,27 @@ short cria_janela( int *argc , char **argv ){
 
 	glewInit();
 
-	cria_quadrado(1);
+	cria_quadrado( 0 );
 
 	glutMainLoop();
 	return 1;
 }
 
 void inicia_animacao( unsigned char key, int x, int y ){
+	static short pode_iniciar = 0;
 	if( key == 'a' ) limpa_tela();
-	else if( key == '1' ) cria_quadrado( 1 ); /* Inicio da animação */
-	else if( key == '2' ) cria_quadrado( 2 );
-	else if( key == '3' ) cria_quadrado( 3 );
-	else if( key == '4' ) cria_quadrado( 4 );
-	else if( key == 32 ) bubble_sort();
+	else if( key == '0' ) pode_iniciar = 0, cria_quadrado( 0 );
+	else if( key == '1' ) pode_iniciar = 1, cria_quadrado( 1 ); /* Inicio da animação */
+	else if( key == '2' ) pode_iniciar = 1, cria_quadrado( 2 );
+	else if( key == '3' ) pode_iniciar = 1, cria_quadrado( 3 );
+	else if( key == '4' ) pode_iniciar = 1, cria_quadrado( 4 );
+	else if( key == 32 ){ if( pode_iniciar ) pode_iniciar = 0, iniciou_animacao = 1, bubble_sort(); }
 	else if( key == 27 ) glutDestroyWindow( janela ); /* Mata a animação */
 }
 
 void desenha_tela( void ){
 	limpa_tela();
-	if( inicio ) atualiza_tela();
-	else inicio = 1;
+	atualiza_tela();
 }
 
 void limpa_tela( void ){
@@ -63,7 +68,8 @@ void limpa_tela( void ){
 }
 
 void cria_quadrado( int opcao ){
-	int i;
+	int i; iniciou_animacao = 0;
+	tempoDeInicioDaAnim = trocas = comparacoes = passos = tempoTotal = 0;
 	populador( opcao );
 
 	pares_elementos = malloc( N * 2 * sizeof( GLfloat ) );
@@ -75,7 +81,8 @@ void cria_quadrado( int opcao ){
 }
 
 void atualiza_tela( void ){
-	reposiciona_vertices();
+
+	if( trocou ){ reposiciona_vertices(); trocou = 0; }
 
 	glEnableClientState( GL_VERTEX_ARRAY );
 
@@ -86,30 +93,72 @@ void atualiza_tela( void ){
 	
 	glDisableClientState( GL_VERTEX_ARRAY );
 
-	escreve_na_tela( MARGEM_ESQUERDA , tela_Alt - MARGEM_SUPERIOR , "Ola Mundo" );
+	escreve_na_tela( MARGEM_ESQUERDA , tela_Alt - ALT_TEXTO );
 
 	glutSwapBuffers();
 }
 
-void escreve_na_tela( int x , int y , char *texto ){
-	int i;
+void escreve_na_tela( int x , int y ){
+	int i , tamValor; char *valor = NULL;
+	#define printa_tab (glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , 9 ),glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , 9 ))
 	
+	const char texto[][30] = {
+		{N_TEXT},
+		{TEMPO_TEXT},
+		{PASSOS_TEXT},
+		{COMP_TEXT},
+		{TROCAS_TEXT}
+	};
+
+	if( iniciou_animacao ) tempoTotal = (clock()-tempoDeInicioDaAnim)*COMPONENTE_PROPORCAO_TEMPO;
+	else tempoTotal = 0 , tempoDeInicioDaAnim=clock();
+
 	glPushMatrix();
 	glRasterPos2f( x , y );
 
-	for( i = 0 ; texto[i] != '\0' ; ++i ){
-		glutBitmapCharacter( GLUT_BITMAP_HELVETICA_12 , texto[i] );
-	}
+		/* Printa o N e seu valor */
+		for( i = 0 ; texto[0][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[0][i] );
+		tamValor = int_p_string( N , &valor );
+		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
+		printa_tab;
+
+		/* Printa o Tempo total e seu valor */
+		for( i = 0 ; texto[1][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[1][i] );
+		tamValor = int_p_string( tempoTotal , &valor );
+		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
+		glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , 'm' );glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , 's' );
+		printa_tab;
+
+		/* Printa os passos e seu valor */
+		for( i = 0 ; texto[2][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[2][i] );
+		tamValor = int_p_string( passos , &valor );
+		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
+		printa_tab;
+
+		/* Printa as comparacoes e seu valor */
+		for( i = 0 ; texto[3][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[3][i] );
+		tamValor = int_p_string( comparacoes , &valor );
+		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
+		printa_tab;
+
+		/* Printa as trocas e seu valor */
+		for( i = 0 ; texto[4][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[4][i] );
+		tamValor = int_p_string( trocas , &valor );
+		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
 
 	glRasterPos2f( -x , -y );
 	glPopMatrix();
 
+	#undef printa_tab
 }
 
 void populador( int opcao ){
 	elementos = malloc( N * sizeof( int ) );
 	if( !elementos ){ printf("ERRO! Ponteiro elementos não mallocado!\n"); exit(1);}
 	switch( opcao ){
+		case 0:
+			popula_zero( N , elementos );
+			break;
 		case 1:
 			popula_aleatorio( N , elementos );
 			break;
@@ -129,4 +178,8 @@ void populador( int opcao ){
 void reposiciona_vertices( void ){
 	int i;
 	for( i = 0 ; i < N ; ++i ) pares_elementos[i*2+1] = elementos[i] * yElem;
+}
+
+void termina_animacao( void ){
+	iniciou_animacao = 0;
 }

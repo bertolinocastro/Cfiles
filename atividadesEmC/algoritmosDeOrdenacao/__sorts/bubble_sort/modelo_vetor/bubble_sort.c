@@ -1,32 +1,26 @@
-#include "bubble_sort.h"
-#include "../../../arquivo_principal/openGL.h"
 #include <stdio.h>
-#include <time.h>
+#include "bubble_sort.h"
+#ifndef HAVE_OWN_OPENGL_LIB_H
+	#include "../../../arquivo_principal/openGL.h"
+#endif
+#include "../../../arquivo_principal/delay.h"
 
 void bubble_sort( void ){
-	int i , j , aux; clock_t start , end;
-	printf("Elementos: ");
-	for( i = 0 ; i < N ; ++i ) printf(" %d", elementos[i] );
-		printf("\n");
-
+	int i , j , aux;
 	for( i = 0 ; i < N - 1 ; ++i ){
 		for( j = i + 1 ; j < N ; ++j ){
+			comparacoes++;
 			if( elementos[i] > elementos[j] ){
+				trocas++;
 				aux = elementos[i];
 				elementos[i] = elementos[j];
 				elementos[j] = aux;
-				start = clock();
-				do{
-					end = clock();
-				}while( start + 2*CLOCKS_PER_SEC/100 >= end );
-				desenha_tela();
+				delay_ms( );
+				trocou = 1;
 			}
-			printf("DEBUG: ele i:%d = %d j:%d = %d\n", i , elementos[i] , j , elementos[j] );
+			passos++;
+			desenha_tela();
 		}
-
 	}
-	printf("Elementos: ");
-	for( i = 0 ; i < N ; ++i ) printf(" %d", elementos[i] );
-		printf("\n");
-
+	termina_animacao();
 }

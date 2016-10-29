@@ -1,0 +1,1 @@
+int int_p_string( int num , char **prt );
