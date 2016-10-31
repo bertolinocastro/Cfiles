@@ -10,6 +10,7 @@ void menu_populador( unsigned char key, int x, int y );
 #define TEMPO_TEXT "Tempo: "
 #define PASSOS_TEXT "Passos: "
 #define N_TEXT "No de chaves: "
+#define ESPACADOR_TEXT "Espacador(gap): "
 
 void desenha_tela_populador( void );
 
@@ -27,6 +28,7 @@ time_t tempoTotal;
 time_t tempoDeInicioDaAnim;
 int comparacoes;
 int trocas;
+int espacador;
 short trocou;
 short iniciou_animacao;
 int *elementos;

@@ -4,7 +4,7 @@
 
 void insertion_sort( void ){
 	int i, j, aux;
-	comparacoes++;passos++;
+	comparacoes++;passos++; espacador = 0;
 	for( i = 1 ; i < N ; ++i ){
 		aux = elementos[i];
 		passos++;

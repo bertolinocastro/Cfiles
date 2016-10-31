@@ -6,6 +6,7 @@ void quick_sort_starter( int *vet, int left, int right );
 int quick_sort_divisor( int *vet, int left, int right );
 
 void quick_sort( void ){
+	espacador = 0;
 	quick_sort_starter( elementos, 0, N-1 );
 	desenha_tela_populador();
 	termina_animacao();

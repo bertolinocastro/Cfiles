@@ -149,7 +149,34 @@ Existem inúmeras outras sequências de 'Gaps', tanto teorizadas
 cientificamente, quanto comprovadas experimentalmente, que sejam
 muito eficientes.
 
+As preferidas são as que geram uma quantidade considerável de
+números primos e as em que o incremento decresça exponencialmente.
+
 (Ver shell_gaps_tabela.png)
+
+
+//
+
+
+Agora que já vimos a definição da sequência de 'Gaps' e a definição
+do Shell Sort p.d., vamos ao código:
+
+void shell_sort( void ){
+	int i, j, aux, gap, exp = 0;
+	while( pow( 2, exp ) - 1 < N ) ++exp; /* Hibbard */
+	gap = pow( 2, exp ) - 1;
+
+	do{
+		for( i = gap; i < N; ++i ){
+			aux = elementos[i];
+			for( j = i - gap; j >= 0 && aux < elementos[j]; j -= gap ){
+				elementos[j+gap] = elementos[j];
+			}
+			elementos[j+gap] = aux;
+		}
+	}while( --exp > 0 && (gap = pow( 2, exp ) - 1) >= 1 );
+}
+
 
 
 

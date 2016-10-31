@@ -3,7 +3,7 @@
 #include "../../../arquivo_principal/delay.h"
 
 void bubble_sort( void ){
-	int i , j , aux;
+	int i , j , aux; espacador = 0;
 	for( i = 0 ; i < N - 1 ; ++i ){
 		for( j = N - 1 ; j >= i + 1 ; --j ){
 			iElem = j-1;

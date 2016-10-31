@@ -15,7 +15,7 @@ void ativa_populador( int opcao ){
 
 	xElem = (float) tela_Larg / N;
 	raio_elemento = xElem/2;
-	if( raio_elemento < 1 ) raio_elemento = 1;
+	if( raio_elemento < 2 ) raio_elemento = 2;
 	yElem = (float) (tela_Alt - MARGEM_SUPERIOR - ALT_TEXTO - raio_elemento*2) / N;
 
 	topoLinhas = (float) (tela_Alt - MARGEM_SUPERIOR - ALT_TEXTO);
@@ -150,7 +150,8 @@ void escreve_na_tela_populador( int x , int y ){
 		{TEMPO_TEXT},
 		{PASSOS_TEXT},
 		{COMP_TEXT},
-		{TROCAS_TEXT}
+		{TROCAS_TEXT},
+		{ESPACADOR_TEXT}
 	};
 
 	if( iniciou_animacao ) tempoTotal = (clock()-tempoDeInicioDaAnim)*COMPONENTE_PROPORCAO_TEMPO;
@@ -187,6 +188,12 @@ void escreve_na_tela_populador( int x , int y ){
 		/* Printa as trocas e seu valor */
 		for( i = 0 ; texto[4][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[4][i] );
 		tamValor = int_p_string( trocas , &valor );
+		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
+		printa_tab;
+	
+		/* Printa o espacador e seu valor */
+		for( i = 0 ; texto[5][i] != '\0' ; ++i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , texto[5][i] );
+		tamValor = int_p_string( espacador , &valor );
 		for( i = tamValor - 1 ; i >= 0 ; --i ) glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18 , valor[i] );
 
 	glPopMatrix();
