@@ -1,3 +1,5 @@
+#include <time.h>
+
 void ativa_populador( int opcao );
 void desativa_populador( void );
 

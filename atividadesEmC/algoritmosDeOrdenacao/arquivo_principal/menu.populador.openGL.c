@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "openGL.h"
 #include "populadores.h"
-#include "../__sorts/bubble_sort/modelo_vetor/bubble_sort.h"
+#include "../__sorts/todos_sorts.h"
 #include "int_p_string.h"
 
 GLfloat topoLinhas;
 
 void ativa_populador( int opcao ){
 
+	elementos = malloc( N * sizeof( int ) );
+	if( !elementos ){ printf("ERRO! Ponteiro elementos não mallocado!\n"); exit(1);}
+
 	xElem = (float) tela_Larg / N;
 	raio_elemento = xElem/2;
 	if( raio_elemento < 1 ) raio_elemento = 1;
-	yElem = (float) (tela_Alt - MARGEM_SUPERIOR - ALT_TEXTO - raio_elemento) / N;
+	yElem = (float) (tela_Alt - MARGEM_SUPERIOR - ALT_TEXTO - raio_elemento*2) / N;
 
 	topoLinhas = (float) (tela_Alt - MARGEM_SUPERIOR - ALT_TEXTO);
 
@@ -20,16 +24,19 @@ void ativa_populador( int opcao ){
 
 	switch( opcao ){
 		case 1:
-			chama_ordenador = &bubble_sort;
+			chama_ordenador = &bertolino_sort;
 			break;
 		case 2:
 			chama_ordenador = &bubble_sort;
 			break;
 		case 3:
-			chama_ordenador = &bubble_sort;
+			chama_ordenador = &insertion_sort;
 			break;
 		case 4:
-			chama_ordenador = &bubble_sort;
+			chama_ordenador = &shell_sort;
+			break;
+		case 5:
+			chama_ordenador = &quick_sort;
 			break;
 	}
 
@@ -40,6 +47,8 @@ void ativa_populador( int opcao ){
 }
 
 void desativa_populador( void ){
+	free( elementos ); elementos = NULL;
+	free( pares_elementos ); pares_elementos = NULL;
 	ativa_sorts();
 }
 
@@ -51,6 +60,7 @@ void menu_populador( unsigned char key, int x, int y ){
 	else if( key == '2' ) pode_iniciar = 1, cria_quadrado( 2 );
 	else if( key == '3' ) pode_iniciar = 1, cria_quadrado( 3 );
 	else if( key == '4' ) pode_iniciar = 1, cria_quadrado( 4 );
+	else if( key == '5' ) pode_iniciar = 1, cria_quadrado( 5 );
 	else if( key == 32 ){ if( pode_iniciar ) pode_iniciar = 0, iniciou_animacao = 1, chama_ordenador(); }
 	else if( key == 27 ) desativa_populador(); /* Retorna para Menu_sorts */
 	
@@ -66,7 +76,8 @@ void cria_quadrado( int opcao ){
 	tempoDeInicioDaAnim = trocas = comparacoes = passos = tempoTotal = 0;
 	populador( opcao );
 
-	pares_elementos = malloc( N * 2 * sizeof( GLfloat ) );
+	pares_elementos = realloc( pares_elementos , N * 2 * sizeof( GLfloat ) );
+	if( !pares_elementos ){ printf("Erro ao allocar pares_elementos!\n"); exit( 1 ); }
 	for( i = 0 ; i < N ; ++i ){
 		pares_elementos[i*2] = i * xElem + raio_elemento;
 		pares_elementos[i*2+1] = elementos[i] * yElem;
@@ -184,8 +195,6 @@ void escreve_na_tela_populador( int x , int y ){
 }
 
 void populador( int opcao ){
-	elementos = malloc( N * sizeof( int ) );
-	if( !elementos ){ printf("ERRO! Ponteiro elementos não mallocado!\n"); exit(1);}
 	switch( opcao ){
 		case 0:
 			popula_zero( N , elementos );
@@ -202,8 +211,10 @@ void populador( int opcao ){
 		case 4:
 			popula_50_porcento_iguais( N , elementos );
 			break;
+		case 5:
+			popula_crescente_e_decrescente( N , elementos );
+			break;
 	}
-
 }
 
 void reposiciona_vertices( void ){

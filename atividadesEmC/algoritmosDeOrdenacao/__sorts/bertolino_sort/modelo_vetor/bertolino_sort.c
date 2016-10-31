@@ -1,19 +1,19 @@
-#include "bubble_sort.h"
+#include "bertolino_sort.h"
 #include "../../../arquivo_principal/openGL.h"
 #include "../../../arquivo_principal/delay.h"
 
-void bubble_sort( void ){
+void bertolino_sort( void ){
 	int i , j , aux;
 	for( i = 0 ; i < N - 1 ; ++i ){
-		for( j = N - 1 ; j >= i + 1 ; --j ){
-			iElem = j-1;
+		iElem = i;
+		for( j = i + 1 ; j < N ; ++j ){
 			jElem = j;
 			comparacoes++;
-			if( elementos[j] < elementos[j-1] ){
+			if( elementos[i] > elementos[j] ){
 				trocas++;
-				aux = elementos[j];
-				elementos[j] = elementos[j-1];
-				elementos[j-1] = aux;
+				aux = elementos[i];
+				elementos[i] = elementos[j];
+				elementos[j] = aux;
 				#ifdef COM_DELAY
 					delay_ms( );
 				#endif

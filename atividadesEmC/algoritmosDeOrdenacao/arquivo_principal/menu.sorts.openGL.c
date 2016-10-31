@@ -1,12 +1,14 @@
 #include "openGL.h"
 #include "menu.sorts.openGL.h"
 #include <stdio.h>
+#include <time.h>
 
 float margemHorMenu;
 float margemVerMenu;
 float espacamentoOpcoesMenu;
 
 const char texto[][COMP_MAX_STR_OPCOES] = {
+	{BERTOLINO_SORT},
 	{BUBBLE_SORT},
 	{INSERTION_SORT},
 	{SHELL_SORT},
@@ -31,6 +33,7 @@ void menu_sorts( unsigned char key, int x, int y ){
 	else if( key == '2' ) ativa_populador( 2 );
 	else if( key == '3' ) ativa_populador( 3 );
 	else if( key == '4' ) ativa_populador( 4 );
+	else if( key == '5' ) ativa_populador( 5 );
 	else if( key == 27 ) glutDestroyWindow( janela ); /* Mata a animação */
 }
 

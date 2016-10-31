@@ -34,6 +34,13 @@ void popula_50_porcento_iguais( int N , int *lista ){
 	free(listaTmp);
 }
 
+void popula_crescente_e_decrescente( int N , int *lista ){
+	int i = 0 , lim = (unsigned int)((N+1)/2);
+	while( i < lim ) (lista[i] = i+1) , ++i;
+	--i;
+	while( i >= 0 ) (lista[N-i-1] = i+1) , --i;
+}
+
 void popula_zero( int N , int *lista ){
 	int i = 0;
 	while( i < N ) (lista[i] = 1) , ++i;

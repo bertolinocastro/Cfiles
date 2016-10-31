@@ -8,19 +8,9 @@
 
 #include <GL/glew.h>
 #include <GL/glut.h>
-#ifndef HAVE_STRING_H
-	#include <string.h>
-#endif
-#ifndef HAVE_MATH_H
-	#include <math.h>
-#endif
 
 #include "menu.populador.openGL.h"
 #include "menu.sorts.openGL.h"
-
-#ifndef HAVE_OWN_OPENGL_LIB_H
-	#define HAVE_OWN_OPEN_GL_LIB_H
-#endif
 
 #define COMPONENTE_PROPORCAO_TEMPO 4000.0f/CLOCKS_PER_SEC
 
@@ -30,7 +20,7 @@
 #define MARGEM_ESQUERDA 40.0f
 #define ALT_TEXTO 20.0f
 
-#define COMP_MAX_STR_OPCOES 30
+#define COMP_MAX_STR_OPCOES 40
 
 void cria_janela( int *argc , char **argv );
 void limpa_tela( void );
