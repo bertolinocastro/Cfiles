@@ -31,7 +31,6 @@ void shell_sort( void ){
 			#endif
 			desenha_tela_populador();
 		}
-		comparacoes++; passos++;
 	}while( --exp > 0 && (gap = pow( 2, exp ) - 1) >= 1 );
 	espacador = gap; desenha_tela_populador();
 	termina_animacao();
