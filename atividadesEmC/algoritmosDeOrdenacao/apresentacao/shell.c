@@ -421,8 +421,10 @@ void bubble_sort( void ){
 
 Notemos que cada constante 'c*' e 'op*' deve ser entendida como comando-n/operacao-n.
 Esse comando representa uma instrução para o processador, vista do
-médio nível - por conta do código estar escrito em C (posteriormente,
-veremos de forma superficial o mesmo código em baixo nível).
+médio nível - por conta do código estar escrito em C (C é uma linguagem portável,
+sempre que a utilizamos, ela é compilada para a linguagem específica de assemblagem do
+processador em questão, portanto, para cada processador, uma instrução em C pode variar
+bastante, tal como seu consumo e etc).
 
 Cada um desses comandos é excecutado uma ou mais vezes, dependendo da
 lógica por trás do algoritmo e da quantidade de chaves a ser ordenada.
