@@ -33,9 +33,12 @@ void ativa_populador( int opcao ){
 			chama_ordenador = &insertion_sort;
 			break;
 		case 4:
-			chama_ordenador = &shell_sort;
+			chama_ordenador = &shell_sort_hibbard;
 			break;
 		case 5:
+			chama_ordenador = &shell_sort_shell;
+			break;
+		case 6:
 			chama_ordenador = &quick_sort;
 			break;
 	}

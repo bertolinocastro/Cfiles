@@ -11,7 +11,8 @@ const char texto[][COMP_MAX_STR_OPCOES] = {
 	{BERTOLINO_SORT},
 	{BUBBLE_SORT},
 	{INSERTION_SORT},
-	{SHELL_SORT},
+	{SHELL_SORT_1},
+	{SHELL_SORT_2},
 	{QUICK_SORT}
 };
 

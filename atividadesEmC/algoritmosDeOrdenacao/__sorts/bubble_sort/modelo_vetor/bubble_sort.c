@@ -3,25 +3,32 @@
 #include "../../../arquivo_principal/delay.h"
 
 void bubble_sort( void ){
-	int i , j , aux; espacador = 0;
-	for( i = 0 ; i < N - 1 ; ++i ){
-		for( j = N - 1 ; j >= i + 1 ; --j ){
-			iElem = j-1;
-			jElem = j;
+	int j, aux, tam, m; espacador = 0;
+	tam = N-1;
+	do{
+		passos++;
+		m = 0;
+		passos++;
+		for( j = 0 ; j < tam ; ++j ){
+			passos++;
 			comparacoes++;
-			if( elementos[j] < elementos[j-1] ){
-				trocas++;
+			if( elementos[j] > elementos[j+1] ){
 				aux = elementos[j];
-				elementos[j] = elementos[j-1];
-				elementos[j-1] = aux;
-				#ifdef COM_DELAY
-					delay_ms( );
-				#endif
+				elementos[j] = elementos[j+1];
+				elementos[j+1] = aux;
+				m = j;
+				trocas++;
 				trocou = 1;
 			}
-			passos++;
+			iElem = j;
+			jElem = j+1;
+			#ifdef COM_DELAY
+				delay_ms( );
+			#endif
 			desenha_tela_populador();
 		}
-	}
+		tam = m;
+		passos++;
+	}while( tam >= 1 );
 	termina_animacao();
 }

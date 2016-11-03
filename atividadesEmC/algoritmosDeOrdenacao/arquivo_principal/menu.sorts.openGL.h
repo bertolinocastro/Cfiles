@@ -1,10 +1,11 @@
 #define BERTOLINO_SORT "Bertolino Sort."
 #define BUBBLE_SORT "Bubble Sort."
 #define INSERTION_SORT "Insertion Sort."
-#define SHELL_SORT "Shell Sort."
+#define SHELL_SORT_1 "Shell Sort (Hibbard)."
+#define SHELL_SORT_2 "Shell Sort (Shell)."
 #define QUICK_SORT "Quick Sort. ( Nao funcional :-( )"
 
-#define QTD_PAL_MENU_SORT 5
+#define QTD_PAL_MENU_SORT 6
 
 void ativa_sorts( void );
 
