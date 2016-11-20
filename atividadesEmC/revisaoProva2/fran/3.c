@@ -1,20 +1,35 @@
 #include <stdio.h>
 #include <math.h>
 
-int sf( int n );
+unsigned long long int sf( unsigned long long int n );
 
 int main( int argc, char const *argv[] ){
 	unsigned int x;
 	scanf( " %u", &x );
-	printf( "%d\n", sf( x ) );
+	printf( "%llu\n", sf( x ) );
 
 	return 0;
 }
+/*
+
+*** Modelo ágil : Manipulação matemática na vertical ***
 
 int sf( int n ){
 	static int k = 0;
 	if( ++k >= n ) return 1;
 	return pow( n-k+1, k ) * sf( n );
+}
+*/
+
+/*
+*** Modelo passo-a-passo : Manipulação do maior fatorial até o menor ***
+*/
+
+unsigned long long int sf( unsigned long long int n ){
+	static unsigned long long int k = 0;
+    if(k>0) return k-- * sf( n );
+    if(n>0) return n * sf( k = n-1 );
+    return 1;
 }
 
 /*
